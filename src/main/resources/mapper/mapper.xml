@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhb.nettychat.dao.UserMapper">
+
+    <!--检验用户信息(聊天室)-->
+    <select id="checkUser" resultType="com.zhb.nettychat.model.po.UserInfo">
+ 		SELECT * from netty_chatroom.tb_user where username = #{username} and password = #{password}
+ 	</select>
+
+    <!--查-->
+    <!--查询朋友列表-->
+    <select id="getuserinfo" parameterType="String" resultType="com.zhb.nettychat.model.po.UserInfo">
+ 		SELECT friendId as userId,username,avatarUrl from netty_chatroom.tb_friend RIGHT JOIN netty_chatroom.tb_user
+ 		on tb_friend.friendId = tb_user.userId
+ 		where  tb_friend.userId = #{userId}
+ 	</select>
+
+    <!--查询群组-->
+    <select id="getgroup" parameterType="String" resultType="com.zhb.nettychat.model.po.GroupInfo">
+ 		SELECT groupId,groupAvatarUrl,groupName,tb_chat_group.userId,username from netty_chatroom.tb_chat_group RIGHT JOIN netty_chatroom.tb_user
+ 		on tb_chat_group.userId = tb_user.userId
+ 		where  tb_chat_group.groupId =(SELECT groupId FROM tb_chat_group WHERE userId = #{userId})
+ 	</select>
+
+    <!--查询群组列表-->
+    <select id="getgroupinfo" parameterType="String" resultType="com.zhb.nettychat.model.po.GroupInfo">
+ 		SELECT groupId,groupName,groupAvatarUrl from netty_chatroom.tb_chat_group where  userId = #{userId}
+ 	</select>
+
+
+    <!--查询用户信息-->
+    <select id="getuser" parameterType="String" resultType="com.zhb.nettychat.model.po.UserInfo">
+ 		SELECT username,userId from netty_chatroom.tb_user where username = #{username} and password = #{password}
+ 	</select>
+
+    <!--查询用户名-->
+    <select id="getUserByName" parameterType="String" resultType="String">
+ 		SELECT username from netty_chatroom.tb_user where username = #{username}
+ 	</select>
+
+
+    <!--查询用户数-->
+    <select id="getUserCount" resultType="com.zhb.nettychat.model.po.UserInfo">
+        SELECT count(id)as total,count(case when(sex="男") then 1 else null end)as man ,count(case when(sex="女") then 1 else null end) as woman from netty_chatroom.tb_user
+    </select>
+
+    <!--查询用户数-->
+    <select id="getBookCount" resultType="com.zhb.nettychat.model.po.UserInfo">
+        SELECT count(id)as total,count(case when(sex="男") then 1 else null end)as man ,count(case when(sex="女") then 1 else null end) as woman from netty_chatroom.tb_addressbook
+    </select>
+
+
+    <!--查询总用户数-->
+    <select id="gettotaluser" resultType="Integer">
+ 		SELECT count(*) from netty_chatroom.tb_user
+ 	</select>
+
+
+</mapper>

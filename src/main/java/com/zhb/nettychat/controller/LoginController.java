@@ -1,6 +1,7 @@
 package com.zhb.nettychat.controller;
 
 import com.zhb.nettychat.model.po.UserInfo;
+import com.zhb.nettychat.model.vo.ResponseJson;
 import com.zhb.nettychat.service.ChatService;
 import com.zhb.nettychat.service.SecurityService;
 import com.zhb.nettychat.util.Constant;
@@ -64,5 +65,10 @@ public class LoginController {
         return result;
     }
 
+    @RequestMapping(value = "logout", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseJson logout(HttpSession session) {
+        return securityService.logout(session);
+    }
 }
 

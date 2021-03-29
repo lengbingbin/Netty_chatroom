@@ -6,6 +6,7 @@ import com.zhb.nettychat.dao.impl.GroupInfoDaoImpl;
 import com.zhb.nettychat.model.po.*;
 import com.zhb.nettychat.model.vo.ResponseJson;
 import com.zhb.nettychat.service.ChatService;
+import com.zhb.nettychat.util.ChatRedisUtils;
 import com.zhb.nettychat.util.ChatType;
 import com.zhb.nettychat.util.Constant;
 import io.netty.channel.ChannelHandlerContext;
@@ -30,6 +31,8 @@ public class ChatServiceImpl implements ChatService {
     private UserMapper userMapper;
     @Autowired
     private GroupInfoDaoImpl groupInfoDao;
+    @Autowired
+    private ChatRedisUtils chatRedisUtils;
 
     @Override
     public void register(JSONObject param, ChannelHandlerContext ctx) {
@@ -55,6 +58,9 @@ public class ChatServiceImpl implements ChatService {
             String responJson = new ResponseJson()
                     .error(MessageFormat.format("userId为 {0} 的用户没有登录！", toUserId))
                     .toString();
+            String key = toUserId;
+            String item = chatRedisUtils.createChatNumber(Integer.parseInt(fromUserId));
+            chatRedisUtils.hsaveCacheChatMessage(key, item, content);
             sendMessage(ctx, responJson);
         } else {
             String responseJson = new ResponseJson().success()
@@ -104,6 +110,11 @@ public class ChatServiceImpl implements ChatService {
             String responseJson = new ResponseJson()
                     .error(MessageFormat.format("userId为 {0} 的用户没有登录！", toUserId))
                     .toString();
+            String key = toUserId;
+            String item = "file" + chatRedisUtils.createChatNumber(Integer.parseInt(fromUserId));
+            System.out.println("key: " + key + " item: " + item);
+            String content = originalFilename + '-' + fileSize + '+' + fileUrl;
+            chatRedisUtils.hsaveCacheChatMessage(key, item, content);
             sendMessage(ctx, responseJson);
         } else {
             String responseJson = new ResponseJson().success()
